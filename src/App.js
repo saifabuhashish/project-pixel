@@ -1,34 +1,38 @@
-
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 
-import Grid from './Canvas';
-import ColorPicker from './ColorPicker';
-import useStyles from './App.styles';
-import { TwitterPicker } from 'react-color'
+import Grid from "./Canvas";
+import ColorPicker from "./ColorPicker";
+import useStyles from "./App.styles";
+import { TwitterPicker } from "react-color";
 import { useMoralis } from "react-moralis";
-import Moralis from "moralis"
+import Moralis from "moralis";
 //import Button from '@mui/material/Button';
-import ButtonAppBar from './components/ButtonAppBar';
-import Button from 'react-bootstrap/Button';
-import PressStart from './fonts/PressStart2P-Regular.ttf'
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import ButtonAppBar from "./components/ButtonAppBar";
+import Button from "react-bootstrap/Button";
+import PressStart from "./fonts/PressStart2P-Regular.ttf";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CanvasColourComponent from "./components/CanvasColourComponent";
 
 //import SignUpModal from './components/SignUpModal';
 
-
 const offCell = {
   on: false,
-  color: '#000000',
+  color: "#000000",
 };
 const initialCells = Array.from({ length: 2500 }, () => offCell);
 
 function App() {
-
   // const [cells, setCells] = useState(initialCells);
   // const [currentColor, setCurrentColor] = useState('#56BC58');
-   const classes = useStyles();
+  const classes = useStyles();
   // const { authenticate, isAuthenticated, isAuthenticating, user, account, logout } = useMoralis();
   // const [allowance, setAllowance] = useState(0)
   // const colorSwatch = useMemo(
@@ -38,15 +42,11 @@ function App() {
   //   [cells]
   // );
 
-
-
   // useEffect(() => {
   //   if (isAuthenticated) {
   //   }
   //     // add your logic here
   // }, [isAuthenticated]);
-
-
 
   //   const login = async () => {
   //     await Moralis.enableWeb3()
@@ -95,11 +95,8 @@ function App() {
   //   console.log("ALLOWANCE: ", allowance)
   //   setAllowance(allowance)
   // }
-      
-  //   }
 
-    
-      
+  //   }
 
   //   const logOut = async () => {
   //     await logout();
@@ -145,8 +142,6 @@ function App() {
   // //     return allowance
   // // }
 
-  
-
   // return (
   //   <div className={classes.app}>
   //       <div className={classes.top}>
@@ -154,15 +149,15 @@ function App() {
   //         <h1>THE CRYPTO EXPERIMENT</h1>
   //       </div>
   //       <div className={classes.web3}>
-  //         {!isAuthenticated && 
+  //         {!isAuthenticated &&
   //         <Button variant="contained" size="medium" onClick={login}>Connect</Button>
   //         }
   //         {isAuthenticated && <Button variant="outlined" size="medium" onClick={logOut} disabled={isAuthenticating}>Disconnect</Button>}
-          
+
   //       </div>
 
   //       </div>
-        
+
   //         <ColorPicker className={classes.colorPicker} currentColor={currentColor} onSetColor={setCurrentColor} />
   //         {/* <div className={classes.colorSwatchContainer}>
   //           {colorSwatch.map((color) => (
@@ -175,13 +170,11 @@ function App() {
   //           ))}
   //           {/* <CirclePicker></CirclePicker>
   //           </div>*/}
-        
+
   //         <Grid className={classes.grid} cells={cells} setCells={setCells} currentColor={currentColor} />
-      
-      
-       
+
   //   </div>
-    
+
   // );
 
   const [coords, setCoords] = useState({ x: 0, y: 0 });
@@ -202,47 +195,42 @@ function App() {
   // Add event listener using our hook
   useEventListener("mouseup", handler);
 
-
   useEffect(() => {
-    const canvas = document.getElementById('pixelated-canvas');
-    const ctx = canvas.getContext('2d');
-    const fourByFour = [255, 166, 82, 255, 242, 189, 82, 255, 125, 205, 182, 255, 255, 255, 255, 255];
-    const arr = new Uint8ClampedArray(400);
-    const colors = ['blue','white','green','red','yellow']
-
-    for (let i = 0; i < 100; i++) {
-      for (let j = 0; j < 100; j++) {
-        ctx.fillStyle = colors[j%colors.length];
-        ctx.fillRect(j * 25, i * 25, 25, 25);
-      }
-    }
-
+    // const canvas = document.getElementById("pixelated-canvas");
+    // const ctx = canvas.getContext("2d");
+    // const fourByFour = [
+    //   255, 166, 82, 255, 242, 189, 82, 255, 125, 205, 182, 255, 255, 255, 255,
+    //   255,
+    // ];
+    // const arr = new Uint8ClampedArray(400);
+    // const colors = ["blue", "white", "green", "red", "yellow"];
+    // for (let i = 0; i < 100; i++) {
+    //   for (let j = 0; j < 100; j++) {
+    //     ctx.fillStyle = colors[j % colors.length];
+    //     ctx.fillRect(j * 25, i * 25, 25, 25);
+    //   }
+    // }
     // for(var i = 0; i<=arr.length; i++) {
     //   var index = i % fourByFour.length;
     //   arr[i] = fourByFour[index];
     // }
-
     // console.log("ARR: ", arr.length)
-
     // let data = new ImageData(arr, 100)
-
     // ctx.imageSmoothingEnabled = false;
     // ctx.mozImageSmoothingEnabled = false;
     // ctx.webkitImageSmoothingEnabled = false;
     // ctx.msImageSmoothingEnabled = false;
-
     // ctx.putImageData(data, 10, 10)
-
   });
 
   const theme = createTheme({
     typography: {
-     "fontFamily": `'Press Start 2P', cursive`,
-    }
- });
+      fontFamily: `'Press Start 2P', cursive`,
+    },
+  });
 
   return (
-    <div className="App">
+    <div className="App" style={{ height: "100vh" }}>
       {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -258,13 +246,15 @@ function App() {
         </a>
       </header> */}
       <ThemeProvider theme={theme}>
-      <ButtonAppBar></ButtonAppBar>
-        <canvas id="pixelated-canvas" className={classes.pixelatedCanvas} ></canvas>
-
+        <ButtonAppBar></ButtonAppBar>
+        {/* <canvas
+          id="pixelated-canvas"
+          className={classes.pixelatedCanvas}
+        ></canvas> */}
+        <CanvasColourComponent />
       </ThemeProvider>
-        
-        {/* <p>Youy Coords are {coords.x} and {coords.y} </p> */}
-      
+
+      {/* <p>Youy Coords are {coords.x} and {coords.y} </p> */}
     </div>
   );
 }
@@ -299,6 +289,5 @@ function useEventListener(eventName, handler, element = window) {
     [eventName, element] // Re-run if eventName or element changes
   );
 }
-
 
 export default App;
