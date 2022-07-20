@@ -7,6 +7,7 @@ import React, {
   useRef,
   useCallback,
 } from "react";
+import { ToastProvider } from "react-toast-notifications";
 
 import Grid from "./Canvas";
 import ColorPicker from "./ColorPicker";
@@ -245,15 +246,16 @@ function App() {
           Learn React
         </a>
       </header> */}
-      <ThemeProvider theme={theme}>
-        <ButtonAppBar></ButtonAppBar>
-        {/* <canvas
+      <ToastProvider placement="top-right">
+        <ThemeProvider theme={theme}>
+          <ButtonAppBar></ButtonAppBar>
+          {/* <canvas
           id="pixelated-canvas"
           className={classes.pixelatedCanvas}
         ></canvas> */}
-        <CanvasColourComponent />
-      </ThemeProvider>
-
+          <CanvasColourComponent />
+        </ThemeProvider>
+      </ToastProvider>
       {/* <p>Youy Coords are {coords.x} and {coords.y} </p> */}
     </div>
   );
