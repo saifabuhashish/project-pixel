@@ -119,6 +119,19 @@ const CanvasColourComponent = () => {
     });
     draw(x, y);
   };
+
+  const socket = new WebSocket('wss://localhost:3002');
+
+  // Connection opened
+  socket.addEventListener('open', function (event) {
+      console.log('Connected to server')
+  });
+
+  // Listen for messages
+  socket.addEventListener('message', function (event) {
+      console.log('Message from server ', event.data);
+  });
+  
   return (
     <>
       <ColorPicker currentColor={selectedColor} onSetColor={setselectedColor} />
