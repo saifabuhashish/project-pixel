@@ -7,6 +7,7 @@ import React, {
   useRef,
   useCallback,
 } from "react";
+import { ToastProvider } from "react-toast-notifications";
 
 import Grid from "./Canvas";
 import ColorPicker from "./ColorPicker";
@@ -231,29 +232,16 @@ function App() {
 
   return (
     <div className="App" style={{ height: "100vh" }}>
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header> */}
-      <ThemeProvider theme={theme}>
-        <ButtonAppBar></ButtonAppBar>
-        {/* <canvas
+      <ToastProvider placement="top-right">
+        <ThemeProvider theme={theme}>
+          <ButtonAppBar></ButtonAppBar>
+          {/* <canvas
           id="pixelated-canvas"
           className={classes.pixelatedCanvas}
         ></canvas> */}
-        <CanvasColourComponent />
-      </ThemeProvider>
-
+          <CanvasColourComponent />
+        </ThemeProvider>
+      </ToastProvider>
       {/* <p>Youy Coords are {coords.x} and {coords.y} </p> */}
     </div>
   );

@@ -15,4 +15,13 @@ export default createUseStyles({
     imageRendering: "crisp-edges",
     imageRendering: "pixelated",
   },
+  colorPalette: {
+    padding: "1rem",
+    width: "130px",
+    cursor: "pointer",
+  },
+  colorDiv: {
+    height: "50px",
+    width: "50px",
+  },
 });

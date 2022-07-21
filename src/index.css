@@ -11,3 +11,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.mt-15{
+  margin-top: 1.5rem !important;
+}
+
+.react-toast-notifications__container {
+  z-index: 1350 !important;
+}
