@@ -2,75 +2,100 @@ import * as React from "react";
 
 import { useState } from "react";
 import { Formik, Form } from "formik";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import * as Yup from "yup";
-import { IconButton, InputAdornment } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  InputAdornment,
+  Typography,
+  Grid,
+  TextField,
+  Button,
+} from "@mui/material";
 import { RemoveRedEyeOutlined } from "@mui/icons-material";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { registerUser } from "../httpHelper/authApiService";
+import { loginUser, registerUser } from "../httpHelper/authApiService";
+import { useToasts } from "react-toast-notifications";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const REGISTER_URL = "/register";
 
-// function Copyright(props) {
-//   return (
-//     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-//       {'Copyright © '}
-//       <Link color="inherit" href="https://mui.com/">
-//         Your Website
-//       </Link>{' '}
-//       {new Date().getFullYear()}
-//       {'.'}
-//     </Typography>
-//   );
-// }
-
-const theme = createTheme({
-  borderRadius: "8",
-});
-
-export default function SignUp() {
+export default function SignUp({ open, handleClose }) {
+  const [isLogin, setisLogin] = useState(false);
   const [visible, setvisible] = useState(false);
   const [disable, setDisable] = useState(false);
-  const handleSubmit = (values) => {
-    setDisable(false);
+  const { addToast } = useToasts();
+  const handleSignUpSubmit = (values) => {
+    setDisable(true);
     registerUser(values)
       .then((res) => {
         console.log(res, "res");
+        localStorage.setItem("accessToken", res?.tokens?.access?.token);
+        setDisable(false);
+        window.location.reload();
       })
       .catch((err) => {
         console.log(err, "err");
+        setDisable(false);
+        addToast(err?.response?.data?.message, {
+          appearance: "error",
+          autoDismiss: true,
+          autoDismissTimeout: "1500",
+        });
+      });
+  };
+  const handleSignInSubmit = (values) => {
+    setDisable(true);
+    loginUser(values)
+      .then((res) => {
+        setDisable(false);
+        localStorage.setItem("accessToken", res?.tokens?.access?.token);
+        window.location.reload();
+      })
+      .catch((err) => {
+        console.log(err, "err");
+        setDisable(false);
+        addToast(err?.response?.data?.message, {
+          appearance: "error",
+          autoDismiss: true,
+          autoDismissTimeout: "1500",
+        });
       });
   };
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 4,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            borderRadius: "8",
-          }}
-        >
-          <Typography component="h1" variant="h5">
-            Sign up
-          </Typography>
+    <Dialog
+      maxWidth={"xs"}
+      open={open}
+      onClose={() => {
+        handleClose();
+      }}
+      fullWidth
+    >
+      <DialogTitle
+        sx={{
+          p: {
+            xs: "1rem 0.5rem",
+          },
+          textAlign: "center",
+        }}
+      >
+        {isLogin ? "Sign In" : "Sign up"}
+      </DialogTitle>
+      <DialogContent
+        sx={{
+          p: {
+            xs: 1,
+          },
+        }}
+      >
+        {isLogin ? (
           <Formik
+            enableReinitialize
             initialValues={{
               email: "",
-              name: "",
               password: "",
             }}
             validationSchema={Yup.object().shape({
@@ -78,27 +103,14 @@ export default function SignUp() {
                 .email("Please enter valid Email")
                 .required("Email is required.")
                 .nullable(),
-              name: Yup.string().required("Username is required."),
               password: Yup.string()
                 .required("Password is required.")
-                .matches(PWD_REGEX, "Phone number is not valid."),
+                .nullable(),
             })}
-            onSubmit={(values) => handleSubmit(values)}
+            onSubmit={(values) => handleSignInSubmit(values)}
           >
             {({ errors, touched, values, setFieldValue }) => (
               <Form>
-                <TextField
-                  label="Username"
-                  variant="outlined"
-                  fullWidth
-                  className="mt-15"
-                  value={values.name}
-                  error={errors.name && touched.name}
-                  onChange={(e) => setFieldValue("name", e.target.value)}
-                />
-                <Typography variant="caption" sx={{ color: "#d32f2f" }}>
-                  {errors.name && touched.name ? errors.name : ""}
-                </Typography>
                 <TextField
                   label="Email Address"
                   variant="outlined"
@@ -107,11 +119,12 @@ export default function SignUp() {
                   value={values.email}
                   error={errors.email && touched.email}
                   onChange={(e) => setFieldValue("email", e.target.value)}
+                  helperText={errors.email && touched.email ? errors.email : ""}
                 />
-                <Typography variant="caption" sx={{ color: "#d32f2f" }}>
-                  {errors.email && touched.email ? errors.email : ""}
-                </Typography>
                 <TextField
+                  helperText={
+                    errors.password && touched.password ? errors.password : ""
+                  }
                   label="Password"
                   variant="outlined"
                   fullWidth
@@ -137,12 +150,101 @@ export default function SignUp() {
                     ),
                   }}
                 />
-                <Typography variant="caption" sx={{ color: "#d32f2f" }}>
-                  {errors.password && touched.password ? errors.password : ""}
-                </Typography>
                 <Button
                   variant="contained"
                   className="mt-15"
+                  sx={{
+                    marginBottom: "10px",
+                  }}
+                  fullWidth
+                  type="submit"
+                  disabled={disable}
+                >
+                  Sign In
+                </Button>
+              </Form>
+            )}
+          </Formik>
+        ) : (
+          <Formik
+            enableReinitialize
+            initialValues={{
+              email: "",
+              name: "",
+              password: "",
+            }}
+            validationSchema={Yup.object().shape({
+              email: Yup.string()
+                .email("Please enter valid Email")
+                .required("Email is required.")
+                .nullable(),
+              name: Yup.string().required("Username is required."),
+              password: Yup.string()
+                .required("Password is required.")
+                .matches(
+                  PWD_REGEX,
+                  "Password must include atleast one lowecase, one uppercase, one number and one special character."
+                ),
+            })}
+            onSubmit={(values) => handleSignUpSubmit(values)}
+          >
+            {({ errors, touched, values, setFieldValue }) => (
+              <Form>
+                <TextField
+                  label="Username"
+                  variant="outlined"
+                  fullWidth
+                  className="mt-15"
+                  value={values.name}
+                  error={errors.name && touched.name}
+                  onChange={(e) => setFieldValue("name", e.target.value)}
+                  helperText={errors.name && touched.name ? errors.name : ""}
+                />
+                <TextField
+                  label="Email Address"
+                  variant="outlined"
+                  fullWidth
+                  className="mt-15"
+                  value={values.email}
+                  error={errors.email && touched.email}
+                  onChange={(e) => setFieldValue("email", e.target.value)}
+                  helperText={errors.email && touched.email ? errors.email : ""}
+                />
+                <TextField
+                  label="Password"
+                  variant="outlined"
+                  fullWidth
+                  className="mt-15"
+                  type={visible ? "text" : "password"}
+                  value={values.password}
+                  error={errors.password && touched.password}
+                  helperText={
+                    errors.password && touched.password ? errors.password : ""
+                  }
+                  onChange={(e) => setFieldValue("password", e.target.value)}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setvisible(!visible)}
+                        >
+                          {visible ? (
+                            <RemoveRedEyeOutlined />
+                          ) : (
+                            <VisibilityOffIcon />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <Button
+                  variant="contained"
+                  className="mt-15"
+                  sx={{
+                    marginBottom: "10px",
+                  }}
                   fullWidth
                   type="submit"
                   disabled={disable}
@@ -152,15 +254,19 @@ export default function SignUp() {
               </Form>
             )}
           </Formik>
-          <Grid container justifyContent="flex-end">
-            <Grid item>
-              <Link href="#" variant="body2">
-                Already have an account? Sign in
-              </Link>
-            </Grid>
+        )}
+        <Grid container justifyContent="center">
+          <Grid
+            item
+            sx={{
+              cursor: "pointer",
+            }}
+            onClick={() => setisLogin(!isLogin)}
+          >
+            {isLogin ? "Create Account" : "Already have an account? Sign in"}
           </Grid>
-        </Box>
-      </Container>
-    </ThemeProvider>
+        </Grid>
+      </DialogContent>
+    </Dialog>
   );
 }
